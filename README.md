@@ -8,9 +8,11 @@ Execute awaitable shell commands in Unity Editor, and create Shell Command Prese
 
 You can add the package to your project as a [git upm dependency](https://docs.unity3d.com/Manual/upm-git.html).
 
-Add add follow line either through the menu on `Windows/PackageManager`, or directly on the `Packages/manifest.json` file:
+Either add the following line to your project's `Packages/manifest.json` file's dependencies:
 
     "com.mezookan.shell":"https://github.com/abbabon/UnityShell.git",
+
+or via the `Windows/PackageManager` menu, by adding the following git repo: https://github.com/abbabon/UnityShell.git
 
 # Running commands from code
 
