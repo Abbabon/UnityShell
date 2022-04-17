@@ -195,7 +195,7 @@ namespace UnityShell.Editor
         {
             public Encoding Encoding = Encoding.UTF8;
             public string WorkingDirectory = "./";
-            public readonly Dictionary<string, string> EnvironmentVariables = new();
+            public readonly Dictionary<string, string> EnvironmentVariables = new Dictionary<string, string>();
         }
     }
 }
