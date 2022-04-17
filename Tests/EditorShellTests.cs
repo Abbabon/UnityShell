@@ -1,23 +1,24 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using System.Threading.Tasks;
 
-namespace MS.Shell.Editor.Tests{
+namespace UnityShell.Editor.Tests
+{
     public class EditorShellTests
     {
-
-
         [UnityTest]
-        public IEnumerator EchoHelloWorld(){
-            var task = EditorShell.Execute("echo hello world",new EditorShell.Options());
-            task.onLog += (logType,log)=>{
+        public IEnumerator EchoHelloWorld()
+        {
+            var task = EditorShell.Execute("echo hello world", new EditorShell.Options());
+            task.OnLog += (logType, log) =>
+            {
                 Debug.Log(log);
-                LogAssert.Expect(LogType.Log,"hello world");
+                LogAssert.Expect(LogType.Log, "hello world");
             };
-            task.onExit += (code)=>{
+            task.OnExit += (code) =>
+            {
                 Debug.Log("Exit with code = " + code);
                 Assert.True(code == 0);
             };
@@ -25,7 +26,8 @@ namespace MS.Shell.Editor.Tests{
         }
 
         [UnityTest]
-        public IEnumerator EchoAsync(){
+        public IEnumerator EchoAsync()
+        {
             var task = ExecuteShellAsync("echo hello world");
             yield return new TaskYieldable<int>(task);
             Assert.True(task.Result == 0);
@@ -33,7 +35,8 @@ namespace MS.Shell.Editor.Tests{
 
 
         [UnityTest]
-        public IEnumerator ExitWithCode1Async(){
+        public IEnumerator ExitWithCode1Async()
+        {
             var task = ExecuteShellAsync("exit 1");
             yield return new TaskYieldable<int>(task);
             Debug.Log("exit with code = " + task.Result);
@@ -41,8 +44,9 @@ namespace MS.Shell.Editor.Tests{
         }
 
         [UnityTest]
-        public IEnumerator KillAsyncOperation(){
-            var operation = EditorShell.Execute("sleep 5",new EditorShell.Options());
+        public IEnumerator KillAsyncOperation()
+        {
+            var operation = EditorShell.Execute("sleep 5", new EditorShell.Options());
             KillAfter1Second(operation);
             var task = GetOperationTask(operation);
             yield return new TaskYieldable<int>(task);
@@ -50,48 +54,49 @@ namespace MS.Shell.Editor.Tests{
             Assert.True(task.Result == 137);
         }
 
-        private async void KillAfter1Second(EditorShell.Operation operation){
+        private async void KillAfter1Second(ShellOperationToken shellOperationToken)
+        {
             await Task.Delay(1000);
-            operation.Kill();
+            shellOperationToken.Kill();
         }
 
-        private async Task<int> GetOperationTask(EditorShell.Operation operation){
-            int code = await operation; 
+        private async Task<int> GetOperationTask(ShellOperationToken shellOperationToken)
+        {
+            var code = await shellOperationToken;
             return code;
         }
 
-        private async Task<int> ExecuteShellAsync(string cmd){
-            var task = EditorShell.Execute(cmd,new EditorShell.Options());
-            int code = await task; 
-            return code;  
+        private async Task<int> ExecuteShellAsync(string cmd)
+        {
+            var task = EditorShell.Execute(cmd, new EditorShell.Options());
+            var code = await task;
+            return code;
         }
 
 
-        private class ShellOperationYieldable:CustomYieldInstruction{
-            private EditorShell.Operation _operation;
-            public ShellOperationYieldable(EditorShell.Operation operation){
-                _operation = operation;
-            } 
-            public override bool keepWaiting {
-                get{
-                    return !_operation.isDone;
-                }
+        private class ShellOperationYieldable : CustomYieldInstruction
+        {
+            private readonly ShellOperationToken _shellOperationToken;
+
+            public ShellOperationYieldable(ShellOperationToken shellOperationToken)
+            {
+                _shellOperationToken = shellOperationToken;
             }
+
+            public override bool keepWaiting => !_shellOperationToken.IsDone;
         }
 
 
-        private class TaskYieldable<T>:CustomYieldInstruction{
+        private class TaskYieldable<T> : CustomYieldInstruction
+        {
+            private readonly Task<T> _task;
 
-            private Task<T> _task;
-            public TaskYieldable(Task<T> task){
+            public TaskYieldable(Task<T> task)
+            {
                 _task = task;
             }
-            public override bool keepWaiting {
-                get{
-                    return !_task.IsCompleted;
-                }
-            }
 
+            public override bool keepWaiting => !_task.IsCompleted;
         }
     }
 }

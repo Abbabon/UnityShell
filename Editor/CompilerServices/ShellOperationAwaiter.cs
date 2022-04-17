@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace MS.Shell.Editor.CompilerServices{
-    public struct ShellOperationAwaiter: ICriticalNotifyCompletion
+namespace UnityShell.Editor.CompilerServices
+{
+    public struct ShellOperationAwaiter : ICriticalNotifyCompletion
     {
+        private readonly ShellOperationToken _shellOperationToken;
 
-        private EditorShell.Operation _operation;
-        public ShellOperationAwaiter(EditorShell.Operation operation){
-            _operation = operation;
+        public ShellOperationAwaiter(ShellOperationToken shellOperationToken)
+        {
+            _shellOperationToken = shellOperationToken;
         }
 
-        public int GetResult(){
-            return _operation.exitCode;
+        public int GetResult()
+        {
+            return _shellOperationToken.ExitCode;
         }
 
-        public bool IsCompleted{
-            get{
-                return _operation.isDone;
-            }
-        }
+        public bool IsCompleted => _shellOperationToken.IsDone;
 
         public void OnCompleted(Action continuation)
         {
@@ -27,12 +26,13 @@ namespace MS.Shell.Editor.CompilerServices{
 
         public void UnsafeOnCompleted(Action continuation)
         {
-            if(IsCompleted){
+            if (IsCompleted)
+            {
                 continuation();
-            }else{
-                _operation.onExit += (code)=>{
-                    continuation();
-                };
+            }
+            else
+            {
+                _shellOperationToken.OnExit += (_) => { continuation(); };
             }
         }
     }

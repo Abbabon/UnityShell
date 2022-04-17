@@ -1,9 +1,12 @@
 {
-  "name": "com.ms.shell",
+  "name": "com.mezookan.shell",
   "displayName": "Unity Shell",
   "version": "1.0.0",
   "description": "Unity Shell",
   "keywords": [
     "shell"
-  ]
+  ],
+  "dependencies": {
+    "com.cysharp.unitask": "2.3.1"
+  }
 }
