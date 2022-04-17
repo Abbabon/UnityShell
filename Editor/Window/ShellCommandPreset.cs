@@ -30,7 +30,7 @@ namespace UnityShell.Editor
 
         public Status status => _status;
 
-        public ShellOperationToken Execute()
+        public ShellCommandEditorToken Execute()
         {
             if (_status == Status.Running)
             {
@@ -39,7 +39,7 @@ namespace UnityShell.Editor
             }
 
             _status = Status.Running;
-            var options = new EditorShell.Options();
+            var options = new UnityEditorShell.Options();
             if (!string.IsNullOrEmpty(_workingDir))
             {
                 options.WorkDirectory = _workingDir;
@@ -58,7 +58,7 @@ namespace UnityShell.Editor
                 options.Encoding = System.Text.Encoding.GetEncoding(_encoding);
             }
 
-            var task = EditorShell.Execute(_command, options);
+            var task = UnityEditorShell.Execute(_command, options);
             task.OnLog += (logType, log) =>
             {
                 if (logType == UnityShellLogType.Error)
@@ -73,7 +73,7 @@ namespace UnityShell.Editor
 
             task.OnExit += (exitCode) =>
             {
-                Debug.Log("Execute done. Exit code = " + exitCode);
+                Debug.Log($"{this.name} done. Exit code = " + exitCode);
                 _status = exitCode == 0 ? Status.Success : Status.Failed;
             };
             return task;

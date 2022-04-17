@@ -5,19 +5,19 @@ namespace UnityShell.Editor.CompilerServices
 {
     public struct ShellOperationAwaiter : ICriticalNotifyCompletion
     {
-        private readonly ShellOperationToken _shellOperationToken;
+        private readonly ShellCommandEditorToken _shellCommandEditorToken;
 
-        public ShellOperationAwaiter(ShellOperationToken shellOperationToken)
+        public ShellOperationAwaiter(ShellCommandEditorToken shellCommandEditorToken)
         {
-            _shellOperationToken = shellOperationToken;
+            _shellCommandEditorToken = shellCommandEditorToken;
         }
 
         public int GetResult()
         {
-            return _shellOperationToken.ExitCode;
+            return _shellCommandEditorToken.ExitCode;
         }
 
-        public bool IsCompleted => _shellOperationToken.IsDone;
+        public bool IsCompleted => _shellCommandEditorToken.IsDone;
 
         public void OnCompleted(Action continuation)
         {
@@ -32,7 +32,7 @@ namespace UnityShell.Editor.CompilerServices
             }
             else
             {
-                _shellOperationToken.OnExit += (_) => { continuation(); };
+                _shellCommandEditorToken.OnExit += (_) => { continuation(); };
             }
         }
     }

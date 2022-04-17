@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace UnityShell.Editor
 {
-    public class ShellOperationToken
+    public class ShellCommandEditorToken
     {
         public event UnityAction<UnityShellLogType, string> OnLog;
         public event UnityAction<int> OnExit;

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace UnityShell.Editor.Tests
 {
-    public class EditorShellTests
+    public class UnityShellTests
     {
         [UnityTest]
         public IEnumerator EchoHelloWorld()
         {
-            var task = EditorShell.Execute("echo hello world", new EditorShell.Options());
+            var task = UnityEditorShell.Execute("echo hello world", new UnityEditorShell.Options());
             task.OnLog += (logType, log) =>
             {
                 Debug.Log(log);
@@ -46,7 +46,7 @@ namespace UnityShell.Editor.Tests
         [UnityTest]
         public IEnumerator KillAsyncOperation()
         {
-            var operation = EditorShell.Execute("sleep 5", new EditorShell.Options());
+            var operation = UnityEditorShell.Execute("sleep 5", new UnityEditorShell.Options());
             KillAfter1Second(operation);
             var task = GetOperationTask(operation);
             yield return new TaskYieldable<int>(task);
@@ -54,21 +54,21 @@ namespace UnityShell.Editor.Tests
             Assert.True(task.Result == 137);
         }
 
-        private async void KillAfter1Second(ShellOperationToken shellOperationToken)
+        private async void KillAfter1Second(ShellCommandEditorToken shellCommandEditorToken)
         {
             await Task.Delay(1000);
-            shellOperationToken.Kill();
+            shellCommandEditorToken.Kill();
         }
 
-        private async Task<int> GetOperationTask(ShellOperationToken shellOperationToken)
+        private async Task<int> GetOperationTask(ShellCommandEditorToken shellCommandEditorToken)
         {
-            var code = await shellOperationToken;
+            var code = await shellCommandEditorToken;
             return code;
         }
 
         private async Task<int> ExecuteShellAsync(string cmd)
         {
-            var task = EditorShell.Execute(cmd, new EditorShell.Options());
+            var task = UnityEditorShell.Execute(cmd, new UnityEditorShell.Options());
             var code = await task;
             return code;
         }
@@ -76,14 +76,14 @@ namespace UnityShell.Editor.Tests
 
         private class ShellOperationYieldable : CustomYieldInstruction
         {
-            private readonly ShellOperationToken _shellOperationToken;
+            private readonly ShellCommandEditorToken _shellCommandEditorToken;
 
-            public ShellOperationYieldable(ShellOperationToken shellOperationToken)
+            public ShellOperationYieldable(ShellCommandEditorToken shellCommandEditorToken)
             {
-                _shellOperationToken = shellOperationToken;
+                _shellCommandEditorToken = shellCommandEditorToken;
             }
 
-            public override bool keepWaiting => !_shellOperationToken.IsDone;
+            public override bool keepWaiting => !_shellCommandEditorToken.IsDone;
         }
 
 
