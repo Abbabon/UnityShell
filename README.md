@@ -1,70 +1,86 @@
 # UnityShell
 
-Execute shell commands in Unity Editor, support osx & windows
+Execute awaitable shell commands in Unity Editor, and create Shell Command Preset assets for ease of use by non-programmers. Supports OSX & Windows.
 
-在Editor下执行windows和osx的命令行
+# Install
 
+## Git Dependency
 
-# Install 
+You can add the package to your project as a [git upm dependency](https://docs.unity3d.com/Manual/upm-git.html).
 
-add follow line to `Packages/manifest.json`
+Add add follow line either through the menu on `Windows/PackageManager`, or directly on the `Packages/manifest.json` file:
 
-在项目 `Packages/manifest.json` 配置如下的依赖
+    "com.mezookan.shell":"https://github.com/abbabon/UnityShell.git",
 
-    "com.ms.shell":"https://github.com/wlgys8/UnityShell.git",
+# Running commands from code
 
-# Examples
-
-- execute command  `ls`
+For example, this is how to execute the command `ls` and print the results into the Unity console:
 
 ``` csharp
 
-var operation = EditorShell.Execute("ls");
-operation.onExit += (exitCode)=>{
-    
+var shellCommandToken = UnityEditorShell.Execute("ls");
+shellCommandToken.OnExit += (exitCode) => 
+{
+    // Do Nothing!
 };
-operation.onLog += (EditorShell.LogType LogType,string log)=>{
+shellCommandToken.OnLog += (logType, log) =>
+{
     Debug.Log(log);
 };
 
-int exitCode = await operation; //support async/await
+int exitCode = await shellCommandToken;
 ```
 
-* use `Options`
+This is how to run the same command with different [Options](#options)
+
+* use `Options` to 
 
 ``` csharp
 
-var options = new EditorShell.Options(){
-    workDirectory = "./",
-    encoding = System.Text.Encoding.GetEncoding("GBK"), 
-    environmentVars = new Dictionary<string, string>(){
+var options = new UnityEditorShell.Options(){
+    WorkDirectory = "/Users/Mezookan/",
+    Encoding = System.Text.Encoding.GetEncoding("GBK"), 
+    EnvironmentVariables = new Dictionary<string, string>(){
         {"PATH","usr/bin"},
+        {"SHELL","/bin/zsh"},
     }
 };
 
-var operation = EditorShell.Execute("ls",options);
-operation.onExit += (exitCode)=>{
-    
-};
-operation.onLog += (EditorShell.LogType LogType,string log)=>{
-    Debug.Log(log);
-};  
+var shellCommandToken = UnityEditorShell.Execute("ls", options);
 
-```  
+....
 
-# Advanced
+```
 
-## Encoding 编码
+The Shell Command Tokens, which is the way to interact with a queued command, are awaitable (check out `ShellCommandAwaiter` for the implementation); either as a task as used in the Tests suite, or as [UniTasks](https://github.com/Cysharp/UniTask), which I strongly recommend you use in your project.
 
-By default, EditorShell use `UTF8` for encoding. If you get unrecognizable characters, please check your shell app's (`bash` in osx and `cmd.exe` in windows) encoding, and config options.encoding same as that.
+# Running commands from a preset
 
-在中文版的Windows上运行时，可能会出现乱码。 因为cmd采用了GBK编码，而UnityShell默认使用UTF8编码。 只要在Options里将encoding设置为GBK编码即可
+You may create a Scriptable Object with 'presets' of commands you can configure, and use them as a tool for you and your colleagues.
+
+Create an asset either via right-clicking on the Project view or through the `Assets/Create` dropdown menu, and choosing `UnityShell/ShellCommandPreset`.
+
+![README-img-1.png](README-img-1.png)
+
+To manage the entire project's library of ShellCommandPresets, you may use an Editor Window, you can open via the menu `Tools/ShellCommandPresetsManager`. 
+
+![README-img-2.png](README-img-2.png)
+
+# Options
+
+The options for the command may be configured either from code (as in the examples above) or via the Shell Command Presets scriptable objects.
+
+## Working Directory
+
+By default, the working directory for each shell is `./`. You may override it instead of using the `cd` command to navigate around.
 
 
-## Environment Vars 环境变量
+## Encoding
 
-By default, environment vars is empty. You can config it in options.environmentVars.
+By default, EditorShell uses `UTF8` for encoding. If you receive unrecognizable characters as an output and need to process more complex Encodings, please check your shell app's (`bash` in osx and `cmd.exe` in windows) encoding, and config options.encoding same as that.
 
-默认情况下， 使用EditorShell执行命令行时是不带环境变量的。 你可以通过Options.environmentVars 字段来配置自己需要的环境变量。
+## Environment Variables
 
+By default, the environment variables are empty. No default `.profile` or similar files are sourced by default when executing a command. 
 
+This is your way to configure environment variables manually. 

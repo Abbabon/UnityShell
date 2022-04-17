@@ -42,7 +42,7 @@ namespace UnityShell.Editor
             var options = new UnityEditorShell.Options();
             if (!string.IsNullOrEmpty(_workingDir))
             {
-                options.WorkDirectory = _workingDir;
+                options.WorkingDirectory = _workingDir;
             }
 
             if (_customEnvironmentVars != null)

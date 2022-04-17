@@ -133,7 +133,7 @@ namespace UnityShell.Editor
             processStartInfo.CreateNoWindow = true;
             processStartInfo.ErrorDialog = true;
             processStartInfo.UseShellExecute = false;
-            processStartInfo.WorkingDirectory = options.WorkDirectory == null ? "./" : options.WorkDirectory;
+            processStartInfo.WorkingDirectory = options.WorkingDirectory == null ? "./" : options.WorkingDirectory;
             processStartInfo.RedirectStandardOutput = true;
             processStartInfo.RedirectStandardError = true;
             processStartInfo.RedirectStandardInput = true;
@@ -194,8 +194,8 @@ namespace UnityShell.Editor
         public class Options
         {
             public Encoding Encoding = Encoding.UTF8;
-            public string WorkDirectory = "./";
-            public readonly Dictionary<string,string> EnvironmentVariables = new();
+            public string WorkingDirectory = "./";
+            public readonly Dictionary<string, string> EnvironmentVariables = new();
         }
     }
 }
