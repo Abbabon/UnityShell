@@ -62,9 +62,9 @@ namespace UnityShell.Editor
         /// <summary>
         /// This method is intended for compiler use. Don't call it in your code.
         /// </summary>
-        public CompilerServices.ShellOperationAwaiter GetAwaiter()
+        public CompilerServices.ShellCommandAwaiter GetAwaiter()
         {
-            return new CompilerServices.ShellOperationAwaiter(this);
+            return new CompilerServices.ShellCommandAwaiter(this);
         }
     }
 }

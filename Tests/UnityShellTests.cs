@@ -22,7 +22,7 @@ namespace UnityShell.Editor.Tests
                 Debug.Log("Exit with code = " + code);
                 Assert.True(code == 0);
             };
-            yield return new ShellOperationYieldable(task);
+            yield return new ShellCommandYieldable(task);
         }
 
         [UnityTest]
@@ -48,7 +48,7 @@ namespace UnityShell.Editor.Tests
         {
             var operation = UnityEditorShell.Execute("sleep 5", new UnityEditorShell.Options());
             KillAfter1Second(operation);
-            var task = GetOperationTask(operation);
+            var task = GetCommandTask(operation);
             yield return new TaskYieldable<int>(task);
             Debug.Log("exit with code = " + task.Result);
             Assert.True(task.Result == 137);
@@ -60,7 +60,7 @@ namespace UnityShell.Editor.Tests
             shellCommandEditorToken.Kill();
         }
 
-        private async Task<int> GetOperationTask(ShellCommandEditorToken shellCommandEditorToken)
+        private async Task<int> GetCommandTask(ShellCommandEditorToken shellCommandEditorToken)
         {
             var code = await shellCommandEditorToken;
             return code;
@@ -74,11 +74,11 @@ namespace UnityShell.Editor.Tests
         }
 
 
-        private class ShellOperationYieldable : CustomYieldInstruction
+        private class ShellCommandYieldable : CustomYieldInstruction
         {
             private readonly ShellCommandEditorToken _shellCommandEditorToken;
 
-            public ShellOperationYieldable(ShellCommandEditorToken shellCommandEditorToken)
+            public ShellCommandYieldable(ShellCommandEditorToken shellCommandEditorToken)
             {
                 _shellCommandEditorToken = shellCommandEditorToken;
             }

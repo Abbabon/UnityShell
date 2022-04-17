@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 
 namespace UnityShell.Editor.CompilerServices
 {
-    public struct ShellOperationAwaiter : ICriticalNotifyCompletion
+    public struct ShellCommandAwaiter : ICriticalNotifyCompletion
     {
         private readonly ShellCommandEditorToken _shellCommandEditorToken;
 
-        public ShellOperationAwaiter(ShellCommandEditorToken shellCommandEditorToken)
+        public ShellCommandAwaiter(ShellCommandEditorToken shellCommandEditorToken)
         {
             _shellCommandEditorToken = shellCommandEditorToken;
         }
