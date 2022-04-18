@@ -1,8 +1,17 @@
 # UnityShell
 
+[![openupm](https://img.shields.io/npm/v/com.mezookan.shell?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.mezookan.shell/)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FAbbabon%2FUnityShell&count_bg=%2379C83D&title_bg=%23555555&icon=github.svg&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+
 Execute awaitable shell commands in Unity Editor, and create Shell Command Preset assets for ease of use by non-programmers. Supports OSX & Windows.
 
 # Install
+
+## Open UPM
+
+UnityShell can be installed via [OpenUPM](https://openupm.com/). It's recommended to install it via [openupm-cli](https://github.com/openupm/openupm-cli):
+
+`openupm add com.mezookan.shell`
 
 ## Git Dependency
 
