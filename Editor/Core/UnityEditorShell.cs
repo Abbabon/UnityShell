@@ -110,7 +110,7 @@ namespace UnityShell.Editor
             #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
             processStartInfo.Arguments = "-c";
             #elif UNITY_EDITOR_WIN
-            start.Arguments = "/c";
+            processStartInfo.Arguments = "/c";
             #endif
 
             if (options.EnvironmentVariables != null)
