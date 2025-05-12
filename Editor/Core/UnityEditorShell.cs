@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -12,26 +11,27 @@ namespace UnityShell.Editor
         // TODO: move to options
         public static string DefaultShellApp
         {
-            get{
-                #if UNITY_EDITOR_WIN
+            get
+            {
+#if UNITY_EDITOR_WIN
                 var app = "cmd.exe";
-                #elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+#elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
                 var app = "bash";
-                #else
+#else
                 var app = "unsupport-platform"
-                #endif
-                
+#endif
+
                 return app;
             }
-	    }
-        
+        }
+
         // we are using unity actions for posterity in case we want to inspect those in-editor someday
         private static readonly List<UnityAction> ActionsQueue;
 
         static UnityEditorShell()
         {
             ActionsQueue = new List<UnityAction>();
-            EditorApplication.update += OnUpdate;          
+            EditorApplication.update += OnUpdate;
         }
 
         // while running the Unity Editor update loop, we'll unqueue any tasks if such exist.
@@ -70,11 +70,11 @@ namespace UnityShell.Editor
         public static ShellCommandEditorToken Execute(string cmd, Options options = null)
         {
             var shellCommandEditorToken = new ShellCommandEditorToken();
-            System.Threading.ThreadPool.QueueUserWorkItem(delegate(object state)
+            System.Threading.ThreadPool.QueueUserWorkItem(delegate (object state)
             {
                 Process process = null;
                 options ??= new Options();
-                
+
                 try
                 {
                     var processStartInfo = CreateProcessStartInfo(cmd, options);
@@ -103,15 +103,15 @@ namespace UnityShell.Editor
             });
             return shellCommandEditorToken;
         }
-        
+
         private static ProcessStartInfo CreateProcessStartInfo(string cmd, Options options)
         {
             var processStartInfo = new ProcessStartInfo(DefaultShellApp);
-            #if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+#if UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
             processStartInfo.Arguments = "-c";
-            #elif UNITY_EDITOR_WIN
-            start.Arguments = "/c";
-            #endif
+#elif UNITY_EDITOR_WIN
+            processStartInfo.Arguments = "/c";
+#endif
 
             if (options.EnvironmentVariables != null)
             {
@@ -147,15 +147,15 @@ namespace UnityShell.Editor
         {
             shellCommandEditorToken.BindProcess(process);
 
-            process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
+            process.ErrorDataReceived += delegate (object sender, DataReceivedEventArgs e)
             {
                 UnityEngine.Debug.LogError(e.Data);
             };
-            process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
             {
                 UnityEngine.Debug.LogError(e.Data);
             };
-            process.Exited += delegate(object sender, System.EventArgs e)
+            process.Exited += delegate (object sender, System.EventArgs e)
             {
                 UnityEngine.Debug.LogError(e.ToString());
             };
@@ -172,7 +172,10 @@ namespace UnityShell.Editor
                 }
 
                 line = line.Replace("\\", "/");
-                Enqueue(delegate() { shellCommandEditorToken.FeedLog(UnityShellLogType.Log, line); });
+                Enqueue(delegate ()
+                {
+                    shellCommandEditorToken.FeedLog(UnityShellLogType.Log, line);
+                });
             } while (true);
 
             while (true)
@@ -183,7 +186,10 @@ namespace UnityShell.Editor
                     break;
                 }
 
-                Enqueue(delegate() { shellCommandEditorToken.FeedLog(UnityShellLogType.Error, error); });
+                Enqueue(delegate ()
+                {
+                    shellCommandEditorToken.FeedLog(UnityShellLogType.Error, error);
+                });
             }
 
             process.WaitForExit();
@@ -191,12 +197,12 @@ namespace UnityShell.Editor
             process.Close();
             Enqueue(() => { shellCommandEditorToken.MarkAsDone(exitCode); });
         }
-        
+
         public class Options
         {
             public Encoding Encoding = Encoding.UTF8;
             public string WorkingDirectory = "./";
-            public readonly Dictionary<string, string> EnvironmentVariables = new Dictionary<string, string>();
+            public Dictionary<string, string> EnvironmentVariables = new Dictionary<string, string>();
         }
     }
 }
